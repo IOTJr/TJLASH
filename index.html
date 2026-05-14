@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lashed by Amarah - Book Your Appointment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-pink-50 via-cream to-pink-100 font-sans overflow-x-hidden">
+    <!-- Floating Butterfly Container (Background) -->
+    <div id="butterfly-container" class="fixed inset-0 pointer-events-none z-10"></div>
+
+    <!-- Main App Container -->
+    <div id="app" class="min-h-screen relative">
+        <!-- Page: Welcome/Service Selection -->
+        <div id="page-services" class="page-section active">
+            <div class="min-h-screen flex items-center justify-center px-4 py-8">
+                <div class="max-w-2xl w-full">
+                    <!-- Header -->
+                    <div class="text-center mb-12">
+                        <h1 class="text-5xl md:text-6xl font-script text-pink-400 mb-2" style="font-family: 'Brush Script MT', cursive;">
+                            Lashed by Amarah
+                        </h1>
+                        <p class="text-pink-300 text-sm tracking-widest uppercase">Welcome to Your Beauty Journey</p>
+                        <div class="w-24 h-1 bg-gradient-to-r from-pink-300 to-pink-400 mx-auto mt-4"></div>
+                    </div>
+
+                    <!-- Service Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Service Card: Classic -->
+                        <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="classic" data-price="500">
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-pink-200 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-300 to-pink-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    ✨
+                                </div>
+                                <h3 class="text-xl font-bold text-pink-500 mb-2">Classic Lash</h3>
+                                <p class="text-gray-700 text-sm mb-4">Soft and wispy. Perfect for a natural look that enhances your features.</p>
+                                <p class="text-2xl font-bold text-pink-600">500 KES</p>
+                            </div>
+                        </div>
+
+                        <!-- Service Card: Hybrid -->
+                        <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="hybrid" data-price="700">
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-pink-300 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    💫
+                                </div>
+                                <h3 class="text-xl font-bold text-pink-600 mb-2">Hybrid Lash</h3>
+                                <p class="text-gray-700 text-sm mb-4">Bold and defined. The perfect blend of classic and volume for impact.</p>
+                                <p class="text-2xl font-bold text-rose-600">700 KES</p>
+                            </div>
+                        </div>
+
+                        <!-- Service Card: Volume -->
+                        <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="volume" data-price="950">
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-rose-300 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-rose-400 to-rose-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    ⭐
+                                </div>
+                                <h3 class="text-xl font-bold text-rose-600 mb-2">Volume Lash</h3>
+                                <p class="text-gray-700 text-sm mb-4">Dramatic and glamorous. Full lash volume for maximum beauty impact.</p>
+                                <p class="text-2xl font-bold text-rose-700">950 KES</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- Hours -->
+                        <div class="bg-white bg-opacity-50 backdrop-blur rounded-xl p-6 border border-pink-200">
+                            <h4 class="text-pink-500 font-bold text-lg mb-4">⏰ HOURS</h4>
+                            <p class="text-gray-700 text-sm mb-2">MON-FRI: <span class="font-semibold">9:00 AM - 6:00 PM</span></p>
+                            <p class="text-gray-700 text-sm mb-2">SAT-SUN: <span class="font-semibold">10:00 AM - 3:00 PM</span></p>
+                            <p class="text-gray-600 text-xs mt-4">Bookings typically take 1-2 hours. Arrive 15 minutes early.</p>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="bg-white bg-opacity-50 backdrop-blur rounded-xl p-6 border border-pink-200">
+                            <h4 class="text-pink-500 font-bold text-lg mb-4">📱 CONTACT</h4>
+                            <p class="text-gray-700 text-sm mb-2">📧 <span class="font-semibold">HELLO@EMAIL.COM</span></p>
+                            <p class="text-gray-700 text-sm mb-2">☎️ <span class="font-semibold">(123)456-7890</span></p>
+                            <p class="text-gray-700 text-sm">IG: <span class="font-semibold">@YOURSPACE</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Booking Policies -->
+                    <div class="bg-white bg-opacity-40 backdrop-blur rounded-xl p-6 border border-pink-200 mb-8">
+                        <h4 class="text-pink-500 font-bold text-lg mb-4">📋 BOOKING POLICIES</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="font-bold text-pink-600 mb-2">✓ APPOINTMENTS</p>
+                                <p class="text-gray-700">Deposit is non-refundable and used toward your appointment.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-pink-600 mb-2">💰 DEPOSIT</p>
+                                <p class="text-gray-700">50% deposit required to hold your appointment slot.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-pink-600 mb-2">⏱️ LATE ARRIVAL</p>
+                                <p class="text-gray-700">Late arrivals may lose appointment. Rescheduling fees apply.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-pink-600 mb-2">❌ CANCELLATION</p>
+                                <p class="text-gray-700">24-hour notice required or deposit is forfeited.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div class="text-center">
+                        <button id="btn-select-service" disabled class="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Continue to Date Selection →
+                        </button>
+                        <p class="text-gray-600 text-xs mt-4">💝 Please select a service above to continue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Date & Time Selection -->
+        <div id="page-date" class="page-section hidden">
+            <div class="min-h-screen flex items-center justify-center px-4 py-8">
+                <div class="max-w-2xl w-full">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-script text-pink-400 mb-2" style="font-family: 'Brush Script MT', cursive;">
+                            Select Your Date & Time
+                        </h2>
+                        <p class="text-pink-300 text-sm">Choose your perfect appointment slot</p>
+                    </div>
+
+                    <!-- Selected Service Display -->
+                    <div class="bg-white bg-opacity-60 backdrop-blur rounded-xl p-4 mb-6 border border-pink-200">
+                        <p class="text-gray-700 text-sm"><span class="font-bold text-pink-600">Selected Service:</span> <span id="service-display">Classic Lash - 500 KES</span></p>
+                    </div>
+
+                    <!-- Date Picker -->
+                    <div class="mb-8">
+                        <label class="block text-pink-600 font-bold mb-3">📅 Choose Date</label>
+                        <input type="date" id="date-picker" class="w-full px-4 py-3 rounded-lg border-2 border-pink-200 focus:border-pink-400 focus:outline-none bg-white bg-opacity-70">
+                    </div>
+
+                    <!-- Time Slot Grid -->
+                    <div class="mb-8">
+                        <label class="block text-pink-600 font-bold mb-3">⏰ Available Times</label>
+                        <div id="time-slots" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex gap-4">
+                        <button id="btn-back-services" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+                            ← Back
+                        </button>
+                        <button id="btn-continue-checkout" disabled class="flex-1 bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Continue to Checkout →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Checkout Summary -->
+        <div id="page-checkout" class="page-section hidden">
+            <div class="min-h-screen flex items-center justify-center px-4 py-8">
+                <div class="max-w-2xl w-full">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-script text-pink-400 mb-2" style="font-family: 'Brush Script MT', cursive;">
+                            Checkout Summary
+                        </h2>
+                        <p class="text-pink-300 text-sm">Review your booking details</p>
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="bg-white bg-opacity-60 backdrop-blur rounded-xl p-8 border-2 border-pink-200 mb-8 shadow-lg">
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between items-center pb-4 border-b border-pink-100">
+                                <span class="text-gray-700">Service</span>
+                                <span class="font-bold text-pink-600" id="checkout-service">Classic Lash</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-pink-100">
+                                <span class="text-gray-700">Date</span>
+                                <span class="font-bold text-pink-600" id="checkout-date">Pending</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-pink-100">
+                                <span class="text-gray-700">Time</span>
+                                <span class="font-bold text-pink-600" id="checkout-time">Pending</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-4 border-t-2 border-pink-300">
+                                <span class="font-bold text-lg text-gray-800">Total Amount</span>
+                                <span class="font-bold text-2xl text-rose-600" id="total-amount">500 KES</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="mb-8">
+                        <h3 class="text-pink-600 font-bold text-lg mb-4">💳 Payment Method</h3>
+                        <div class="space-y-3">
+                            <!-- Option 1: Full Payment -->
+                            <label class="payment-option cursor-pointer transform transition-all duration-300 hover:scale-102">
+                                <div class="flex items-center p-4 bg-white bg-opacity-60 backdrop-blur rounded-lg border-2 border-pink-200 hover:border-pink-400 hover:shadow-lg">
+                                    <input type="radio" name="payment-method" value="full" class="w-5 h-5 text-pink-600 cursor-pointer">
+                                    <div class="ml-4 flex-1">
+                                        <p class="font-bold text-gray-800">Pay Full Price</p>
+                                        <p class="text-gray-600 text-sm">Complete payment today</p>
+                                    </div>
+                                    <p class="font-bold text-lg text-rose-600" id="full-price">500 KES</p>
+                                </div>
+                            </label>
+
+                            <!-- Option 2: Deposit -->
+                            <label class="payment-option cursor-pointer transform transition-all duration-300 hover:scale-102">
+                                <div class="flex items-center p-4 bg-white bg-opacity-60 backdrop-blur rounded-lg border-2 border-pink-200 hover:border-pink-400 hover:shadow-lg">
+                                    <input type="radio" name="payment-method" value="deposit" class="w-5 h-5 text-pink-600 cursor-pointer" checked>
+                                    <div class="ml-4 flex-1">
+                                        <p class="font-bold text-gray-800">Pay 50% Deposit</p>
+                                        <p class="text-gray-600 text-sm">Balance due at appointment</p>
+                                    </div>
+                                    <p class="font-bold text-lg text-rose-600" id="deposit-price">250 KES</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- M-Pesa Phone Number Input -->
+                    <div class="mb-8">
+                        <label class="block text-pink-600 font-bold mb-3">📱 M-Pesa Phone Number</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3 text-gray-500 font-semibold">+254</span>
+                            <input type="tel" id="mpesa-phone" placeholder="7XX XXX XXX" class="w-full pl-16 pr-4 py-3 rounded-lg border-2 border-pink-200 focus:border-pink-400 focus:outline-none bg-white bg-opacity-70 transition-all duration-300">
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2">Enter your M-Pesa registered phone number</p>
+                    </div>
+
+                    <!-- Amount Display -->
+                    <div class="bg-gradient-to-r from-pink-100 to-rose-100 rounded-lg p-6 mb-8 border border-pink-300">
+                        <p class="text-gray-700 text-sm mb-2">Amount to Pay</p>
+                        <p class="text-4xl font-bold text-pink-600" id="payment-amount">250 KES</p>
+                        <p class="text-xs text-gray-600 mt-2" id="payment-note">50% deposit. Balance: 250 KES at appointment</p>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex gap-4">
+                        <button id="btn-back-date" class="flex-1 bg-gray-400 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+                            ← Back
+                        </button>
+                        <button id="btn-pay-deposit" class="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 pay-button">
+                            Lipa Na M-Pesa 🚀
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Payment Processing -->
+        <div id="page-payment" class="page-section hidden">
+            <div class="min-h-screen flex items-center justify-center px-4 py-8">
+                <div class="max-w-md w-full text-center">
+                    <!-- M-Pesa Logo Animation -->
+                    <div id="mpesa-pulse" class="mb-8">
+                        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl transform transition-transform duration-500" style="animation: pulse-scale 1s ease-in-out infinite;">
+                            <span class="text-5xl">💚</span>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Processing Payment</h2>
+                    <p class="text-gray-600 mb-8">Please enter your M-Pesa PIN on your phone to complete the transaction.</p>
+
+                    <!-- Timeout Warning -->
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-8 rounded">
+                        <p class="text-sm text-yellow-800">⏰ <span id="timeout-counter">60</span> seconds remaining</p>
+                    </div>
+
+                    <!-- Demo Confirm Button (for testing) -->
+                    <button id="btn-demo-confirm" class="w-full bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl mb-4">
+                        ✓ Demo: Confirm Payment
+                    </button>
+
+                    <p class="text-xs text-gray-600">In production, this will be automatic via M-Pesa callback webhook</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page: Success State -->
+        <div id="page-success" class="page-section hidden">
+            <div class="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
+                <!-- Success Content -->
+                <div class="max-w-2xl w-full z-20 relative">
+                    <!-- Logo -->
+                    <div class="text-center mb-8">
+                        <h1 class="text-6xl md:text-7xl font-script text-pink-500 mb-4" style="font-family: 'Brush Script MT', cursive; animation: fadeInScale 0.8s ease-out;">
+                            Lashed by Amarah
+                        </h1>
+                    </div>
+
+                    <!-- Checkmark Animation -->
+                    <div class="flex justify-center mb-8">
+                        <div class="w-32 h-32 bg-gradient-to-br from-green-300 to-green-500 rounded-full flex items-center justify-center shadow-2xl" id="success-checkmark">
+                            <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-bold text-gray-800 mb-4">Deposit Confirmed! ✨</h2>
+                        <p class="text-gray-700 mb-2">Check your M-Pesa and an SMS confirmation has been sent.</p>
+                        <p class="text-pink-600 font-semibold" id="confirmation-details">Confirmation: Pending</p>
+                    </div>
+
+                    <!-- Before Your Appointment Info -->
+                    <div class="bg-white bg-opacity-70 backdrop-blur rounded-xl p-8 border-2 border-pink-200 mb-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-pink-600 mb-6 text-center">📋 Before Your Appointment</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-4">✓</span>
+                                <div>
+                                    <p class="font-bold text-gray-800">Arrive on Time</p>
+                                    <p class="text-gray-600 text-sm">Please arrive 15 minutes early to complete any forms.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-4">✓</span>
+                                <div>
+                                    <p class="font-bold text-gray-800">Remove Contact Lenses</p>
+                                    <p class="text-gray-600 text-sm">Take out contacts before your appointment for safety and comfort.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-4">✓</span>
+                                <div>
+                                    <p class="font-bold text-gray-800">Plan Sufficient Time</p>
+                                    <p class="text-gray-600 text-sm">Appointments typically take 1-2 hours. Relax and enjoy the process.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-2xl mr-4">✓</span>
+                                <div>
+                                    <p class="font-bold text-gray-800">Avoid Caffeine</p>
+                                    <p class="text-gray-600 text-sm">If possible, skip caffeine before your appointment to minimize eye movement.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="text-center">
+                        <button id="btn-home" class="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+                            Return Home
+                        </button>
+                        <p class="text-pink-500 font-semibold mt-4">See you soon, beautiful! 💋✨</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Styles & Animations -->
+    <script src="animations.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
