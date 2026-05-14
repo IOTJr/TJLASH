@@ -9,8 +9,13 @@ npm-debug.log*
 .vercel
 server.js
 package.json
+package-lock.json
 .env.example
 MPESA_INTEGRATION.md
 DEPLOYMENT.md
 TECHNICAL_SPEC.md
 TESTING_GUIDE.md
+QUICKSTART.md
+README.md
+INDEX.md
+DELIVERY_SUMMARY.md
