@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.local
+.git
+.gitignore
+.DS_Store
+*.log
+npm-debug.log*
+.vercel
+server.js
+package.json
+.env.example
+MPESA_INTEGRATION.md
+DEPLOYMENT.md
+TECHNICAL_SPEC.md
+TESTING_GUIDE.md
