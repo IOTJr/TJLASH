@@ -2,7 +2,6 @@
   "buildCommand": "echo 'Static SPA deployment'",
   "outputDirectory": ".",
   "devCommand": "python -m http.server 3000",
-  "functions": {},
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
