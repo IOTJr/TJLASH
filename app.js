@@ -51,6 +51,11 @@ class LashBookingApp {
 
         // Service Page Navigation with butterfly transition
         document.getElementById('btn-select-service').addEventListener('click', () => {
+            if (!this.validateCustomerInfo()) {
+                alert('Please enter your name, phone number and a valid email before continuing.');
+                return;
+            }
+
             const fromEl = this.bookingData.selectedCardElement || null;
             if (this.pageManager && typeof this.pageManager.animateServiceTransition === 'function') {
                 this.pageManager.animateServiceTransition(fromEl, 'page-date');
@@ -86,6 +91,34 @@ class LashBookingApp {
             this.bookingData.date = e.target.value;
             this.validateDateSelection();
         });
+
+        // Customer info inputs (if present)
+        const nameEl = document.getElementById('customer-name');
+        const phoneEl = document.getElementById('customer-phone');
+        const emailEl = document.getElementById('customer-email');
+
+        if (nameEl) {
+            nameEl.addEventListener('input', (e) => {
+                this.bookingData.customerName = e.target.value.trim();
+                this.updateContinueButtonState();
+            });
+        }
+
+        if (phoneEl) {
+            phoneEl.addEventListener('input', (e) => {
+                const cleaned = e.target.value.replace(/\D/g, '');
+                e.target.value = cleaned.slice(0, 9);
+                this.bookingData.customerPhone = '+254' + e.target.value;
+                this.updateContinueButtonState();
+            });
+        }
+
+        if (emailEl) {
+            emailEl.addEventListener('input', (e) => {
+                this.bookingData.customerEmail = e.target.value.trim();
+                this.updateContinueButtonState();
+            });
+        }
 
         // Payment Method Selection
         document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
@@ -160,9 +193,12 @@ class LashBookingApp {
             serviceDisplay.textContent = `${serviceLabel} - ${price} KES`;
         }
 
-        // Enable continue button with animation
+        // Show customer info form and update continue button state
+        const customerForm = document.getElementById('customer-form');
+        if (customerForm) customerForm.classList.remove('hidden');
         const continueBtn = document.getElementById('btn-select-service');
-        continueBtn.disabled = false;
+        // don't enable yet until contact info valid
+        this.updateContinueButtonState();
         
         // Create particle effect
         if (this.pageManager?.particleEngine) {
@@ -179,6 +215,38 @@ class LashBookingApp {
             opacity: 1,
             scale: 1.05
         });
+    }
+
+    /**
+     * Check if customer info inputs are valid
+     */
+    validateCustomerInfo() {
+        const name = this.bookingData.customerName || '';
+        const phone = (this.bookingData.customerPhone || '').replace(/\D/g, '');
+        const email = this.bookingData.customerEmail || '';
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (name.length < 2) return false;
+        if (phone.length < 9) return false;
+        if (!emailRegex.test(email)) return false;
+
+        return true;
+    }
+
+    /**
+     * Enable or disable the continue button based on service selection and contact validity
+     */
+    updateContinueButtonState() {
+        const continueBtn = document.getElementById('btn-select-service');
+        const serviceSelected = !!this.bookingData.service;
+        const contactValid = this.validateCustomerInfo();
+
+        if (serviceSelected && contactValid) {
+            continueBtn.disabled = false;
+        } else {
+            continueBtn.disabled = true;
+        }
     }
 
     /**
