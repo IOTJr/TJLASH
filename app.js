@@ -51,11 +51,6 @@ class LashBookingApp {
 
         // Service Page Navigation with butterfly transition
         document.getElementById('btn-select-service').addEventListener('click', () => {
-            if (!this.validateCustomerInfo()) {
-                alert('Please enter your name, phone number and a valid email before continuing.');
-                return;
-            }
-
             const fromEl = this.bookingData.selectedCardElement || null;
             if (this.pageManager && typeof this.pageManager.animateServiceTransition === 'function') {
                 this.pageManager.animateServiceTransition(fromEl, 'page-date');
@@ -73,10 +68,12 @@ class LashBookingApp {
         });
 
         document.getElementById('btn-continue-checkout').addEventListener('click', () => {
-            if (this.validateDateSelection()) {
+            if (this.validateCustomerInfo() && this.validateDateSelection()) {
                 this.updateCheckoutSummary();
                 this.pageManager.transitionTo('page-checkout');
                 this.pageManager.onPageEnter('page-checkout');
+            } else if (!this.validateCustomerInfo()) {
+                alert('Please complete your name, phone number, and email before continuing.');
             }
         });
 
@@ -193,12 +190,9 @@ class LashBookingApp {
             serviceDisplay.textContent = `${serviceLabel} - ${price} KES`;
         }
 
-        // Show customer info form and update continue button state
-        const customerForm = document.getElementById('customer-form');
-        if (customerForm) customerForm.classList.remove('hidden');
+        // Service is selected; customer info is collected on the next page
         const continueBtn = document.getElementById('btn-select-service');
-        // don't enable yet until contact info valid
-        this.updateContinueButtonState();
+        continueBtn.disabled = false;
         
         // Create particle effect
         if (this.pageManager?.particleEngine) {
@@ -232,21 +226,6 @@ class LashBookingApp {
         if (!emailRegex.test(email)) return false;
 
         return true;
-    }
-
-    /**
-     * Enable or disable the continue button based on service selection and contact validity
-     */
-    updateContinueButtonState() {
-        const continueBtn = document.getElementById('btn-select-service');
-        const serviceSelected = !!this.bookingData.service;
-        const contactValid = this.validateCustomerInfo();
-
-        if (serviceSelected && contactValid) {
-            continueBtn.disabled = false;
-        } else {
-            continueBtn.disabled = true;
-        }
     }
 
     /**
