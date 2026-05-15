@@ -30,14 +30,14 @@ class LashBookingApp {
         ];
 
         this.initializeEventListeners();
-        this.pageManager = window.pageManager;
-        this.pageManager.onPageEnter('page-services');
-        
-            // Wait for page manager to be ready
-            if (!window.pageManager) {
-                console.warn('PageManager not ready, deferring initialization');
-                setTimeout(() => this.initializeAfterPageManager(), 100);
-            }
+        this.pageManager = window.pageManager || null;
+
+        if (this.pageManager) {
+            this.pageManager.onPageEnter('page-services');
+        } else {
+            console.warn('PageManager not ready, deferring initialization');
+            setTimeout(() => this.initializeAfterPageManager(), 100);
+        }
     }
 
     /**
@@ -52,7 +52,11 @@ class LashBookingApp {
         // Service Page Navigation with butterfly transition
         document.getElementById('btn-select-service').addEventListener('click', () => {
             const fromEl = this.bookingData.selectedCardElement || null;
-            this.pageManager.animateServiceTransition(fromEl, 'page-date');
+            if (this.pageManager && typeof this.pageManager.animateServiceTransition === 'function') {
+                this.pageManager.animateServiceTransition(fromEl, 'page-date');
+            } else {
+                this.pageManager?.transitionTo?.('page-date');
+            }
             // generate time slots after a short delay to allow transition
             setTimeout(() => this.generateTimeSlots(), 700);
         });
@@ -123,14 +127,21 @@ class LashBookingApp {
     selectService(card) {
         // Remove previous selection
         document.querySelectorAll('.service-card').forEach(c => {
+            c.classList.remove('selected');
             c.style.transform = 'scale(1)';
-            c.style.borderWidth = '2px';
+            const inner = c.querySelector(':scope > div');
+            if (inner) {
+                inner.style.borderWidth = '2px';
+                inner.style.boxShadow = '';
+            }
         });
 
         // Add selection styling
+        card.classList.add('selected');
         card.style.transform = 'scale(1.05)';
-        card.style.borderWidth = '3px';
-        gsap.to(card, {
+        const selectedInner = card.querySelector(':scope > div') || card;
+        selectedInner.style.borderWidth = '3px';
+        gsap.to(selectedInner, {
             duration: 0.3,
             boxShadow: '0 0 30px rgba(233, 107, 168, 0.5)'
         });
@@ -143,17 +154,25 @@ class LashBookingApp {
         // store selected element for transitions
         this.bookingData.selectedCardElement = card;
 
+        const serviceLabel = this.services[service]?.name || 'Selected Service';
+        const serviceDisplay = document.getElementById('service-display');
+        if (serviceDisplay) {
+            serviceDisplay.textContent = `${serviceLabel} - ${price} KES`;
+        }
+
         // Enable continue button with animation
         const continueBtn = document.getElementById('btn-select-service');
         continueBtn.disabled = false;
         
         // Create particle effect
-        const rect = card.getBoundingClientRect();
-        this.pageManager.particleEngine.createFloatingParticles(
-            rect.left + rect.width / 2,
-            rect.top + rect.height / 2,
-            12
-        );
+        if (this.pageManager?.particleEngine) {
+            const rect = card.getBoundingClientRect();
+            this.pageManager.particleEngine.createFloatingParticles(
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2,
+                12
+            );
+        }
 
         gsap.to(continueBtn, {
             duration: 0.3,
@@ -492,8 +511,13 @@ class LashBookingApp {
 
         // Reset UI
         document.querySelectorAll('.service-card').forEach(card => {
+            card.classList.remove('selected');
             card.style.transform = 'scale(1)';
-            card.style.borderWidth = '2px';
+            const inner = card.querySelector(':scope > div');
+            if (inner) {
+                inner.style.borderWidth = '2px';
+                inner.style.boxShadow = '';
+            }
         });
 
         document.getElementById('btn-select-service').disabled = true;

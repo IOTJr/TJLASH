@@ -8,88 +8,19 @@ class ButterflyAnimationEngine {
         this.container = document.getElementById('butterfly-container');
         this.butterflySet = ['🦋', '🦋', '✨', '💫'];
         this.activeButterflies = [];
+        this.mouseX = window.innerWidth / 2;
+        this.mouseY = window.innerHeight / 2;
+        this.isMouseTrackingInitialized = false;
     }
 
     /**
      * Create and animate floating butterflies in background
      */
     createFloatingButterflies(count = 8) {
-        /**
-         * Initialize mouse tracking for butterflies
-         */
-        initializeMouseTracking() {
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
+        if (!this.container) return;
 
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
+        this.initializeMouseTracking();
 
-            // Create butterflies that follow the mouse
-            setInterval(() => {
-                if (Math.random() > 0.7) {
-                    this.createMouseFollowingButterfly(mouseX, mouseY);
-                }
-            }, 2000);
-        }
-
-        /**
-         * Create butterfly that follows the mouse
-         */
-        createMouseFollowingButterfly(startX, startY) {
-            const butterfly = document.createElement('div');
-            const emoji = this.butterflySet[Math.floor(Math.random() * this.butterflySet.length)];
-            butterfly.className = 'butterfly';
-            butterfly.textContent = emoji;
-            butterfly.style.left = startX + 'px';
-            butterfly.style.top = startY + 'px';
-            butterfly.style.opacity = 0.7;
-            butterfly.style.fontSize = '28px';
-            this.container.appendChild(butterfly);
-
-            let x = startX;
-            let y = startY;
-            let targetX = startX;
-            let targetY = startY;
-            let angle = 0;
-
-            const follower = setInterval(() => {
-                // Get current mouse position
-                const mouseX = parseFloat(butterfly.dataset.mouseX || startX);
-                const mouseY = parseFloat(butterfly.dataset.mouseY || startY);
-
-                // Calculate direction to mouse with smoothing
-                targetX += (mouseX - targetX) * 0.1;
-                targetY += (mouseY - targetY) * 0.1;
-
-                // Create smooth gliding motion
-                x += (targetX - x) * 0.05;
-                y += (targetY - y) * 0.05;
-                angle += 5;
-
-                butterfly.style.left = x + 'px';
-                butterfly.style.top = y + 'px';
-                butterfly.style.transform = `rotate(${angle}deg) scale(${0.8 + Math.sin(angle * 0.05) * 0.2})`;
-            }, 50);
-
-            // Track mouse position in butterfly dataset
-            document.addEventListener('mousemove', (e) => {
-                butterfly.dataset.mouseX = e.clientX;
-                butterfly.dataset.mouseY = e.clientY;
-            });
-
-            // Remove after 8 seconds
-            setTimeout(() => {
-                clearInterval(follower);
-                gsap.to(butterfly, {
-                    duration: 0.5,
-                    opacity: 0,
-                    scale: 0,
-                    onComplete: () => butterfly.remove()
-                });
-            }, 8000);
-        }
         for (let i = 0; i < count; i++) {
             setTimeout(() => {
                 const butterfly = this.createButterflyElement();
@@ -97,6 +28,72 @@ class ButterflyAnimationEngine {
                 this.animateButterfly(butterfly);
             }, Math.random() * 2000);
         }
+    }
+
+    /**
+     * Initialize global mouse tracking once.
+     */
+    initializeMouseTracking() {
+        if (this.isMouseTrackingInitialized) return;
+
+        this.isMouseTrackingInitialized = true;
+        document.addEventListener('mousemove', (e) => {
+            this.mouseX = e.clientX;
+            this.mouseY = e.clientY;
+        });
+
+        // Periodically spawn a follower for a livelier background.
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                this.createMouseFollowingButterfly(this.mouseX, this.mouseY);
+            }
+        }, 2000);
+    }
+
+    /**
+     * Create butterfly that follows the mouse.
+     */
+    createMouseFollowingButterfly(startX, startY) {
+        if (!this.container) return;
+
+        const butterfly = document.createElement('div');
+        const emoji = this.butterflySet[Math.floor(Math.random() * this.butterflySet.length)];
+        butterfly.className = 'butterfly';
+        butterfly.textContent = emoji;
+        butterfly.style.left = startX + 'px';
+        butterfly.style.top = startY + 'px';
+        butterfly.style.opacity = 0.7;
+        butterfly.style.fontSize = '28px';
+        this.container.appendChild(butterfly);
+
+        let x = startX;
+        let y = startY;
+        let targetX = startX;
+        let targetY = startY;
+        let angle = 0;
+
+        const follower = setInterval(() => {
+            targetX += (this.mouseX - targetX) * 0.1;
+            targetY += (this.mouseY - targetY) * 0.1;
+
+            x += (targetX - x) * 0.05;
+            y += (targetY - y) * 0.05;
+            angle += 5;
+
+            butterfly.style.left = x + 'px';
+            butterfly.style.top = y + 'px';
+            butterfly.style.transform = `rotate(${angle}deg) scale(${0.8 + Math.sin(angle * 0.05) * 0.2})`;
+        }, 50);
+
+        setTimeout(() => {
+            clearInterval(follower);
+            gsap.to(butterfly, {
+                duration: 0.5,
+                opacity: 0,
+                scale: 0,
+                onComplete: () => butterfly.remove()
+            });
+        }, 8000);
     }
 
     /**
@@ -111,8 +108,6 @@ class ButterflyAnimationEngine {
         butterfly.style.top = Math.random() * 50 - 50 + 'px';
         butterfly.style.opacity = Math.random() * 0.5 + 0.3;
         return butterfly;
-        // Also start mouse tracking
-        setTimeout(() => this.initializeMouseTracking(), 500);
     }
 
     /**
