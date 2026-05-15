@@ -32,6 +32,12 @@ class LashBookingApp {
         this.initializeEventListeners();
         this.pageManager = window.pageManager;
         this.pageManager.onPageEnter('page-services');
+        
+            // Wait for page manager to be ready
+            if (!window.pageManager) {
+                console.warn('PageManager not ready, deferring initialization');
+                setTimeout(() => this.initializeAfterPageManager(), 100);
+            }
     }
 
     /**
@@ -62,6 +68,15 @@ class LashBookingApp {
                 this.updateCheckoutSummary();
                 this.pageManager.transitionTo('page-checkout');
                 this.pageManager.onPageEnter('page-checkout');
+
+                /**
+                 * Initialize after page manager is ready
+                 */
+                initializeAfterPageManager() {
+                    if (window.pageManager) {
+                        this.pageManager = window.pageManager;
+                        this.pageManager.onPageEnter('page-services');
+                    }
             }
         });
 
