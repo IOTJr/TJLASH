@@ -20,7 +20,7 @@ const AppConfig = (() => {
             price: 500,
             icon: '✨',
             color: 'pink',
-            image: 'images/Classic%20-%20B%20-%20B%20_%20_15mm%20_%20Mixed%2012-13.jpg'
+            image: 'images/classic.jpg'
         },
         hybrid: {
             id: 'hybrid',
@@ -29,7 +29,7 @@ const AppConfig = (() => {
             price: 700,
             icon: '💫',
             color: 'pink-600',
-            image: 'images/HYBRID%20EYELASH%20EXTENSIONS.jpg'
+            image: 'images/hybrid.jpg'
         },
         volume: {
             id: 'volume',
@@ -38,7 +38,7 @@ const AppConfig = (() => {
             price: 950,
             icon: '⭐',
             color: 'rose',
-            image: 'images/Mega%20volume.jpg'
+            image: 'images/mega.jpg'
         }
     };
 
