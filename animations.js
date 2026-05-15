@@ -128,6 +128,7 @@ class PageTransitionManager {
     constructor() {
         this.currentPage = null;
         this.animationEngine = new ButterflyAnimationEngine();
+        this.particleEngine = new ParticleEffectEngine();
     }
 
     /**
@@ -204,7 +205,63 @@ class PageTransitionManager {
         } else if (pageId === 'page-success') {
             setTimeout(() => {
                 this.animationEngine.cascadeButterflies(4, 20);
+                this.particleEngine.createConfetti(50);
             }, 500);
+        }
+    }
+}
+
+/**
+ * Particle Effect Engine
+ */
+class ParticleEffectEngine {
+    constructor() {
+        this.particles = [];
+    }
+
+    /**
+     * Create confetti particles
+     */
+    createConfetti(count = 50) {
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'confetti';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = '-10px';
+            particle.style.width = (Math.random() * 8 + 5) + 'px';
+            particle.style.height = (Math.random() * 8 + 5) + 'px';
+            particle.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+            particle.style.animationDelay = (Math.random() * 0.5) + 's';
+            particle.style.animationDuration = (Math.random() * 1 + 2.5) + 's';
+            
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 3500);
+        }
+    }
+
+    /**
+     * Create floating particles on interaction
+     */
+    createFloatingParticles(x, y, count = 8) {
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            const emojis = ['✨', '💫', '⭐', '💖', '✨'];
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.className = 'particle';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.setProperty('--tx', (Math.random() * 100 - 50) + 'px');
+            particle.style.fontSize = (Math.random() * 20 + 16) + 'px';
+            particle.style.animationDuration = (Math.random() * 0.8 + 1.2) + 's';
+            
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 2000);
         }
     }
 }
@@ -214,6 +271,7 @@ class PageTransitionManager {
  */
 window.ButterflyAnimationEngine = ButterflyAnimationEngine;
 window.PageTransitionManager = PageTransitionManager;
+window.ParticleEffectEngine = ParticleEffectEngine;
 
 /**
  * Initialize animations on page load
@@ -226,6 +284,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         if (e.target.closest('button') && !e.target.disabled) {
             pageManager.animationEngine.createCursorButterfly(e);
+            // Also create floating particles for extra visual feedback
+            setTimeout(() => {
+                pageManager.particleEngine.createFloatingParticles(e.pageX, e.pageY, 5);
+            }, 100);
         }
     });
 
@@ -251,5 +313,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 ease: 'power2.out'
             });
         });
+
+        // Add click particle effect
+        card.addEventListener('click', () => {
+            const rect = card.getBoundingClientRect();
+            pageManager.particleEngine.createFloatingParticles(
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2,
+                8
+            );
+        });
     });
+
+    // Add loading state animations to time slots
+    setTimeout(() => {
+        const timeSlots = document.querySelectorAll('.time-slot');
+        timeSlots.forEach((slot, index) => {
+            slot.style.animationDelay = (index * 0.05) + 's';
+        });
+    }, 500);
 });

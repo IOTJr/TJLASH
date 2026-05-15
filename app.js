@@ -137,11 +137,22 @@ class LashBookingApp {
         // store selected element for transitions
         this.bookingData.selectedCardElement = card;
 
-        // Enable continue button
-        document.getElementById('btn-select-service').disabled = false;
-        gsap.to(document.getElementById('btn-select-service'), {
+        // Enable continue button with animation
+        const continueBtn = document.getElementById('btn-select-service');
+        continueBtn.disabled = false;
+        
+        // Create particle effect
+        const rect = card.getBoundingClientRect();
+        this.pageManager.particleEngine.createFloatingParticles(
+            rect.left + rect.width / 2,
+            rect.top + rect.height / 2,
+            12
+        );
+
+        gsap.to(continueBtn, {
             duration: 0.3,
-            opacity: 1
+            opacity: 1,
+            scale: 1.05
         });
     }
 
@@ -152,17 +163,47 @@ class LashBookingApp {
         const container = document.getElementById('time-slots');
         container.innerHTML = '';
 
-        this.availableTimes.forEach(time => {
+        this.availableTimes.forEach((time, index) => {
             const slot = document.createElement('button');
             slot.className = 'time-slot';
             slot.textContent = time;
             slot.type = 'button';
+            slot.style.opacity = '0';
+            slot.style.animationDelay = (index * 0.05) + 's';
             
             slot.addEventListener('click', () => {
-                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                document.querySelectorAll('.time-slot').forEach(s => {
+                    s.classList.remove('selected');
+                    gsap.to(s, { duration: 0.2, scale: 1 });
+                });
                 slot.classList.add('selected');
+                gsap.to(slot, { duration: 0.3, scale: 1.1 });
+                
                 this.bookingData.time = time;
+                
+                // Create particle effect
+                const rect = slot.getBoundingClientRect();
+                this.pageManager.particleEngine.createFloatingParticles(
+                    rect.left + rect.width / 2,
+                    rect.top + rect.height / 2,
+                    6
+                );
+
                 document.getElementById('btn-continue-checkout').disabled = false;
+                
+                // Animate button
+                gsap.to(document.getElementById('btn-continue-checkout'), {
+                    duration: 0.3,
+                    scale: 1.05
+                });
+            });
+
+            // Animate in the slot
+            gsap.to(slot, {
+                duration: 0.4,
+                opacity: 1,
+                delay: index * 0.05,
+                ease: 'back.out'
             });
 
             container.appendChild(slot);
@@ -281,15 +322,32 @@ class LashBookingApp {
             scale: 0.95
         });
 
+        // Create confetti effect on payment initiation
+        this.pageManager.particleEngine.createFloatingParticles(
+            payButton.getBoundingClientRect().left + payButton.getBoundingClientRect().width / 2,
+            payButton.getBoundingClientRect().top + payButton.getBoundingClientRect().height / 2,
+            15
+        );
+
+        // Show loading state
+        payButton.textContent = 'Processing... 🔄';
+        payButton.disabled = true;
+
         // Transition to payment processing page
-        this.pageManager.transitionTo('page-payment');
-        this.pageManager.onPageEnter('page-payment');
+        setTimeout(() => {
+            this.pageManager.transitionTo('page-payment');
+            this.pageManager.onPageEnter('page-payment');
 
-        // In production, this would call your backend M-Pesa endpoint
-        this.callMpesaAPI();
+            // In production, this would call your backend M-Pesa endpoint
+            this.callMpesaAPI();
 
-        // Set timeout for demo (60 seconds)
-        this.startPaymentTimeout();
+            // Set timeout for demo (60 seconds)
+            this.startPaymentTimeout();
+
+            // Reset button
+            payButton.textContent = 'Lipa Na M-Pesa 🚀';
+            payButton.disabled = false;
+        }, 300);
     }
 
     /**
@@ -359,6 +417,15 @@ class LashBookingApp {
         // Transition to success page
         this.pageManager.transitionTo('page-success');
         this.pageManager.onPageEnter('page-success');
+
+        // Create delayed particle bursts for celebration effect
+        setTimeout(() => {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    this.pageManager.particleEngine.createConfetti(30);
+                }, i * 300);
+            }
+        }, 600);
 
         // Update success page with booking details
         document.getElementById('confirmation-details').textContent = 

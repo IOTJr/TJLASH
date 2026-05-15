@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
 </head>
 <body class="bg-gradient-to-br from-pink-50 via-cream to-pink-100 font-sans overflow-x-hidden">
     <!-- Floating Butterfly Container (Background) -->
@@ -31,37 +33,55 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <!-- Service Card: Classic -->
                         <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="classic" data-price="500">
-                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-pink-200 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-300 to-pink-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                                    ✨
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl overflow-hidden border-2 border-pink-200 shadow-lg hover:shadow-2xl transition-all duration-300 card-glow">
+                                <div class="relative h-40 bg-gradient-to-br from-pink-200 to-pink-100 overflow-hidden">
+                                    <img src="images/Classic%20-%20B%20-%20B%20_%20_15mm%20_%20Mixed%2012-13.jpg" alt="Classic Lash" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                 </div>
-                                <h3 class="text-xl font-bold text-pink-500 mb-2">Classic Lash</h3>
-                                <p class="text-gray-700 text-sm mb-4">Soft and wispy. Perfect for a natural look that enhances your features.</p>
-                                <p class="text-2xl font-bold text-pink-600">500 KES</p>
+                                <div class="p-6">
+                                    <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-pink-300 to-pink-400 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                        ✨
+                                    </div>
+                                    <h3 class="text-xl font-bold text-pink-500 mb-2 text-center">Classic Lash</h3>
+                                    <p class="text-gray-700 text-sm mb-4">Soft and wispy. Perfect for a natural look that enhances your features.</p>
+                                    <p class="text-2xl font-bold text-pink-600 text-center">500 KES</p>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Service Card: Hybrid -->
                         <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="hybrid" data-price="700">
-                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-pink-300 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                                    💫
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl overflow-hidden border-2 border-pink-300 shadow-lg hover:shadow-2xl transition-all duration-300 card-glow">
+                                <div class="relative h-40 bg-gradient-to-br from-pink-300 to-pink-100 overflow-hidden">
+                                    <img src="images/HYBRID%20EYELASH%20EXTENSIONS.jpg" alt="Hybrid Lash" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                 </div>
-                                <h3 class="text-xl font-bold text-pink-600 mb-2">Hybrid Lash</h3>
-                                <p class="text-gray-700 text-sm mb-4">Bold and defined. The perfect blend of classic and volume for impact.</p>
-                                <p class="text-2xl font-bold text-rose-600">700 KES</p>
+                                <div class="p-6">
+                                    <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                        💫
+                                    </div>
+                                    <h3 class="text-xl font-bold text-pink-600 mb-2 text-center">Hybrid Lash</h3>
+                                    <p class="text-gray-700 text-sm mb-4">Bold and defined. The perfect blend of classic and volume for impact.</p>
+                                    <p class="text-2xl font-bold text-rose-600 text-center">700 KES</p>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Service Card: Volume -->
                         <div class="service-card cursor-pointer transform transition-all duration-300 hover:scale-105" data-service="volume" data-price="950">
-                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl p-8 border-2 border-rose-300 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-rose-400 to-rose-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                                    ⭐
+                            <div class="bg-white bg-opacity-60 backdrop-blur rounded-2xl overflow-hidden border-2 border-rose-300 shadow-lg hover:shadow-2xl transition-all duration-300 card-glow">
+                                <div class="relative h-40 bg-gradient-to-br from-rose-200 to-pink-100 overflow-hidden">
+                                    <img src="images/Mega%20volume.jpg" alt="Volume Lash" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                 </div>
-                                <h3 class="text-xl font-bold text-rose-600 mb-2">Volume Lash</h3>
-                                <p class="text-gray-700 text-sm mb-4">Dramatic and glamorous. Full lash volume for maximum beauty impact.</p>
-                                <p class="text-2xl font-bold text-rose-700">950 KES</p>
+                                <div class="p-6">
+                                    <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-rose-400 to-rose-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                        ⭐
+                                    </div>
+                                    <h3 class="text-xl font-bold text-rose-600 mb-2 text-center">Volume Lash</h3>
+                                    <p class="text-gray-700 text-sm mb-4">Dramatic and glamorous. Full lash volume for maximum beauty impact.</p>
+                                    <p class="text-2xl font-bold text-rose-700 text-center">950 KES</p>
+                                </div>
                             </div>
                         </div>
                     </div>
