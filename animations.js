@@ -354,7 +354,7 @@ window.ParticleEffectEngine = ParticleEffectEngine;
 /**
  * Initialize animations on page load
  */
-document.addEventListener('DOMContentLoaded', () => {
+function initAnimations() {
     const pageManager = new PageTransitionManager();
     window.pageManager = pageManager;
 
@@ -410,4 +410,10 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.style.animationDelay = (index * 0.05) + 's';
         });
     }, 500);
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAnimations);
+} else {
+    initAnimations();
+}

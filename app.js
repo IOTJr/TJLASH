@@ -533,10 +533,20 @@ class LashBookingApp {
 /**
  * Initialize application when DOM is ready
  */
-document.addEventListener('DOMContentLoaded', () => {
-    window.lashApp = new LashBookingApp();
-    console.log('Lashed by Amarah Booking App Initialized');
-});
+function initApp() {
+    try {
+        window.lashApp = new LashBookingApp();
+        console.log('Lashed by Amarah Booking App Initialized');
+    } catch (e) {
+        console.error('Failed to initialize LashBookingApp', e);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 /**
  * M-Pesa Webhook Handler (For backend integration)
