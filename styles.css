@@ -127,9 +127,36 @@ body {
 }
 
 .inspo-panel {
+    position: relative;
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid rgba(214, 123, 159, 0.35);
     box-shadow: 0 14px 0 rgba(236, 184, 205, 0.95), 0 18px 28px rgba(189, 121, 153, 0.18);
+}
+
+.inspo-panel::before,
+.inspo-panel::after {
+    content: '';
+    position: absolute;
+    width: 1.8rem;
+    height: 1.1rem;
+    background: linear-gradient(135deg, #f5bfd4, #e59bbb);
+    opacity: 0.9;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.inspo-panel::before {
+    top: -0.45rem;
+    left: -0.35rem;
+    transform: rotate(-24deg);
+    clip-path: polygon(0 50%, 36% 0, 56% 28%, 76% 0, 100% 50%, 76% 100%, 56% 72%, 36% 100%);
+}
+
+.inspo-panel::after {
+    right: -0.35rem;
+    bottom: -0.45rem;
+    transform: rotate(156deg);
+    clip-path: polygon(0 50%, 36% 0, 56% 28%, 76% 0, 100% 50%, 76% 100%, 56% 72%, 36% 100%);
 }
 
 .inspo-panel--soft {
@@ -138,6 +165,13 @@ body {
 
 .inspo-panel--strong {
     box-shadow: 0 14px 0 rgba(233, 170, 196, 0.95), 0 20px 30px rgba(189, 121, 153, 0.22);
+}
+
+.inspo-panel--soft::before,
+.inspo-panel--soft::after {
+    width: 1.55rem;
+    height: 0.95rem;
+    opacity: 0.75;
 }
 
 .inspo-panel--inner {
