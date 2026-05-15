@@ -68,15 +68,6 @@ class LashBookingApp {
                 this.updateCheckoutSummary();
                 this.pageManager.transitionTo('page-checkout');
                 this.pageManager.onPageEnter('page-checkout');
-
-                /**
-                 * Initialize after page manager is ready
-                 */
-                initializeAfterPageManager() {
-                    if (window.pageManager) {
-                        this.pageManager = window.pageManager;
-                        this.pageManager.onPageEnter('page-services');
-                    }
             }
         });
 
@@ -527,6 +518,18 @@ class LashBookingApp {
                 appVersion: '1.0.0'
             }
         };
+    }
+
+    /**
+     * Ensure pageManager is attached once available
+     */
+    initializeAfterPageManager() {
+        if (window.pageManager) {
+            this.pageManager = window.pageManager;
+            this.pageManager.onPageEnter('page-services');
+        } else {
+            setTimeout(() => this.initializeAfterPageManager(), 100);
+        }
     }
 }
 
