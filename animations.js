@@ -138,17 +138,61 @@ class PageTransitionManager {
         const currentPages = document.querySelectorAll('.page-section.active');
         currentPages.forEach(page => {
             page.classList.remove('active');
+            // Add hidden so Tailwind doesn't keep it visible
+            page.classList.add('hidden');
         });
 
         // Show new page
         setTimeout(() => {
             const newPage = document.getElementById(pageId);
             if (newPage) {
+                // Ensure it's visible then animate in
+                newPage.classList.remove('hidden');
                 newPage.classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 this.currentPage = pageId;
             }
         }, 300);
+    }
+
+    /**
+     * Animate a butterfly flying from the selected service card into the next page,
+     * then perform a page transition. Used for the continue button visual.
+     */
+    animateServiceTransition(fromElement, targetPageId) {
+        if (!fromElement) {
+            this.transitionTo(targetPageId);
+            this.onPageEnter(targetPageId);
+            return;
+        }
+
+        const rect = fromElement.getBoundingClientRect();
+        const butterfly = document.createElement('div');
+        butterfly.className = 'butterfly fly-transition';
+        butterfly.textContent = '🦋';
+        butterfly.style.left = rect.left + rect.width / 2 + 'px';
+        butterfly.style.top = rect.top + rect.height / 2 + 'px';
+        butterfly.style.fontSize = '48px';
+        butterfly.style.zIndex = 9999;
+        document.body.appendChild(butterfly);
+
+        // Animate butterfly to center-top then remove and transition
+        const targetX = window.innerWidth / 2 - 24; // center offset
+        const targetY = 80; // near top
+
+        gsap.to(butterfly, {
+            duration: 0.9,
+            x: targetX - (rect.left + rect.width / 2),
+            y: targetY - (rect.top + rect.height / 2),
+            rotation: 360,
+            scale: 1.2,
+            ease: 'power2.out',
+            onComplete: () => {
+                gsap.to(butterfly, { duration: 0.4, opacity: 0, scale: 0.6, onComplete: () => butterfly.remove() });
+                this.transitionTo(targetPageId);
+                this.onPageEnter(targetPageId);
+            }
+        });
     }
 
     /**

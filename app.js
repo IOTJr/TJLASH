@@ -43,11 +43,12 @@ class LashBookingApp {
             card.addEventListener('click', () => this.selectService(card));
         });
 
-        // Service Page Navigation
+        // Service Page Navigation with butterfly transition
         document.getElementById('btn-select-service').addEventListener('click', () => {
-            this.pageManager.transitionTo('page-date');
-            this.pageManager.onPageEnter('page-date');
-            this.generateTimeSlots();
+            const fromEl = this.bookingData.selectedCardElement || null;
+            this.pageManager.animateServiceTransition(fromEl, 'page-date');
+            // generate time slots after a short delay to allow transition
+            setTimeout(() => this.generateTimeSlots(), 700);
         });
 
         // Date Page Navigation
@@ -133,6 +134,8 @@ class LashBookingApp {
         const price = parseInt(card.dataset.price);
         this.bookingData.service = service;
         this.bookingData.servicePrice = price;
+        // store selected element for transitions
+        this.bookingData.selectedCardElement = card;
 
         // Enable continue button
         document.getElementById('btn-select-service').disabled = false;
