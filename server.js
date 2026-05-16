@@ -82,7 +82,7 @@ function buildIntaSendStkPushPayload({ amount, phone, bookingId }) {
     const payload = {
         amount: Math.ceil(amount).toString(),
         phone_number: formatPhoneNumber(phone),
-        api_ref: `BK${bookingId}`,
+        api_ref: bookingId,
         mobile_tarrif: process.env.INTASEND_MOBILE_TARRIF || 'BUSINESS-PAYS'
     };
 
@@ -398,6 +398,44 @@ app.post('/api/intasend/status', async (req, res) => {
             success: false,
             error: error.message || 'Failed to query payment status'
         });
+    }
+});
+
+/**
+ * IntaSend Webhook Handler
+ */
+app.post('/api/intasend/webhook', async (req, res) => {
+    try {
+        console.log('Received IntaSend webhook:', JSON.stringify(req.body, null, 2));
+
+        const { challenge, invoice_id, state, api_ref, failed_reason, checkout_id } = req.body;
+
+        if (challenge) {
+            const expectedChallenge = process.env.INTASEND_WEBHOOK_CHALLENGE || challenge;
+            if (challenge !== expectedChallenge) {
+                return res.status(401).json({ success: false, error: 'Invalid webhook challenge' });
+            }
+
+            return res.json({ success: true, challenge });
+        }
+
+        const bookingRef = api_ref || checkout_id || invoice_id;
+        if (!bookingRef) {
+            return res.status(400).json({ success: false, error: 'Missing api_ref / invoice_id / checkout_id' });
+        }
+
+        if (state === 'COMPLETE') {
+            await updateBookingStatus(bookingRef, 'CONFIRMED');
+        } else if (state === 'FAILED') {
+            await updateBookingStatus(bookingRef, 'FAILED', failed_reason || 'Payment failed');
+        } else {
+            await updateBookingStatus(bookingRef, state || 'PENDING_PAYMENT');
+        }
+
+        return res.json({ success: true });
+    } catch (error) {
+        console.error('IntaSend webhook error:', error.response?.data || error.message);
+        return res.status(500).json({ success: false, error: 'Webhook processing failed' });
     }
 });
 

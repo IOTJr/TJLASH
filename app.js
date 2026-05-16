@@ -1,6 +1,6 @@
 /**
  * Lashed by Amarah - Main Application
- * Booking system with M-Pesa payment integration
+ * Booking system with IntaSend payment integration
  */
 
 class LashBookingApp {
@@ -133,7 +133,7 @@ class LashBookingApp {
             });
         });
 
-        // M-Pesa Phone Input
+        // Payment phone input
         document.getElementById('mpesa-phone').addEventListener('input', (e) => {
             const value = e.target.value.replace(/\D/g, '');
             const formatted = value.slice(0, 9);
@@ -390,7 +390,7 @@ class LashBookingApp {
         const phone = document.getElementById('mpesa-phone').value;
 
         if (!phone || phone.length < 9) {
-            alert('Please enter a valid M-Pesa phone number');
+            alert('Please enter a valid phone number');
             return false;
         }
 
@@ -403,7 +403,7 @@ class LashBookingApp {
     }
 
     /**
-     * Initiate M-Pesa payment
+    * Initiate IntaSend payment
      */
     initiateMpesaPayment() {
         if (!this.validatePaymentInputs()) {
@@ -436,7 +436,7 @@ class LashBookingApp {
             this.pageManager.transitionTo('page-payment');
             this.pageManager.onPageEnter('page-payment');
 
-            // In production, this would call your backend M-Pesa endpoint
+            // In production, this would call your backend IntaSend endpoint
             this.callMpesaAPI();
 
             // Set timeout for demo (60 seconds)
@@ -496,6 +496,8 @@ class LashBookingApp {
                 paymentMessage.textContent = `IntaSend request sent. ${confirmation}`;
             }
 
+            this.startIntaSendStatusPolling();
+
             return data;
         } catch (error) {
             console.error('IntaSend API error:', error);
@@ -506,7 +508,52 @@ class LashBookingApp {
     }
 
     /**
-     * Handle M-Pesa payment success (called via webhook or demo button)
+     * Poll IntaSend payment status until the transaction completes or fails
+     */
+    startIntaSendStatusPolling() {
+        if (this.paymentTimeoutId) {
+            clearInterval(this.paymentTimeoutId);
+        }
+
+        const pollStatus = async () => {
+            try {
+                const response = await fetch('/api/intasend/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        invoiceId: this.bookingData.invoiceId,
+                        checkoutId: this.bookingData.checkoutId
+                    })
+                });
+
+                const data = await response.json();
+                const invoice = data?.data?.invoice || data?.data?.invoice_data || data?.data?.data?.invoice;
+                const state = invoice?.state || data?.data?.state || data?.state;
+
+                if (state === 'COMPLETE') {
+                    clearInterval(this.paymentTimeoutId);
+                    this.handlePaymentSuccess();
+                }
+
+                if (state === 'FAILED') {
+                    clearInterval(this.paymentTimeoutId);
+                    alert('Payment failed. Please try again.');
+                    this.pageManager.transitionTo('page-checkout');
+                    this.pageManager.onPageEnter('page-checkout');
+                }
+            } catch (error) {
+                console.error('IntaSend status polling error:', error);
+            }
+        };
+
+        pollStatus();
+        this.paymentTimeoutId = setInterval(pollStatus, 10000);
+    }
+
+    /**
+    * Handle payment success (called via webhook or demo button)
      */
     handlePaymentSuccess() {
         // Stop timeout counter
@@ -517,7 +564,7 @@ class LashBookingApp {
         // Prepare success data
         const successData = {
             bookingId: this.bookingData.bookingId,
-            reference: 'MPE' + this.bookingData.bookingId,
+            reference: 'ITS' + this.bookingData.bookingId,
             amount: this.bookingData.depositAmount,
             phone: this.bookingData.mpesaPhone,
             timestamp: new Date().toLocaleString()
@@ -669,11 +716,11 @@ if (document.readyState === 'loading') {
 }
 
 /**
- * M-Pesa Webhook Handler (For backend integration)
- * This would be called from your backend when M-Pesa sends the callback
+ * IntaSend Webhook Handler (For backend integration)
+ * This would be called from your backend when IntaSend sends the callback
  */
 window.handleMpesaCallback = function(callbackData) {
-    console.log('M-Pesa Callback Received:', callbackData);
+    console.log('IntaSend Callback Received:', callbackData);
 
     if (callbackData.resultCode === 0) {
         // Payment successful
