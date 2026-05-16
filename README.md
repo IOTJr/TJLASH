@@ -168,29 +168,34 @@ Edit in `index.html` - update these sections:
 
 **Note**: Requires JavaScript enabled. CSS Grid and CSS Custom Properties support needed.
 
-## M-Pesa Integration
+## IntaSend Integration
 
-For production deployment with real M-Pesa payments:
+For production deployment with real IntaSend payments:
 
-1. **Obtain M-Pesa Credentials**
-   - Business Short Code
-   - Pass Key
-   - Consumer Key & Secret (from Daraja API)
+1. **Create / sign in to your IntaSend account**
+   - You need an active merchant account to use the secret key and receive webhooks.
 
-2. **Set Up Backend**
-   - Use the Node.js/Express example in `MPESA_INTEGRATION.md`
-   - Or implement in your preferred backend language
+2. **Set the environment variables**
+   - `INTASEND_SECRET_KEY`
+   - `INTASEND_PUBLISHABLE_KEY`
+   - `INTASEND_ENVIRONMENT=production`
+   - `INTASEND_BASE_URL=https://api.intasend.com`
+   - `INTASEND_WEBHOOK_URL=https://lash-booking-app.vercel.app/api/intasend/webhook`
 
-3. **Enable Live Payments**
-   - Uncomment the fetch call in `app.js` `callMpesaAPI()` function
-   - Point to your backend API endpoint
-   - Update environment variables
+3. **Webhook endpoint**
+   - Use `https://lash-booking-app.vercel.app/api/intasend/webhook` in the IntaSend dashboard.
+   - IntaSend sends payment collection events to this URL when the payment state changes.
 
-4. **Test with Sandbox**
-   - Use sandbox credentials provided in `MPESA_INTEGRATION.md`
-   - Test full flow before going production
+4. **Local development**
+   - Copy `.env.example` to `.env.local` and fill in the IntaSend values.
+   - Keep the file out of git; it is already ignored.
 
-See `MPESA_INTEGRATION.md` for detailed backend implementation.
+5. **Test the flow**
+   - Start the app locally.
+   - Trigger STK push from the payment page.
+   - Confirm the webhook and status polling update the booking automatically.
+
+See `MPESA_INTEGRATION.md` for the older M-Pesa notes. The live integration now uses IntaSend.
 
 ## Customization
 
