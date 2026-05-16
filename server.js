@@ -46,47 +46,11 @@ const pool = mysql.createPool({
 });
 
 // ===========================================
-// M-PESA UTILITY FUNCTIONS
+// INTASEND UTILITY FUNCTIONS
 // ===========================================
 
 /**
- * Get M-Pesa Access Token
- */
-async function getAccessToken() {
-    const consumerKey = process.env.MPESA_CONSUMER_KEY;
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
-    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-    
-    const url = process.env.MPESA_ENVIRONMENT === 'production'
-        ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
-        : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Basic ${auth}`
-            }
-        });
-        return response.data.access_token;
-    } catch (error) {
-        console.error('Failed to get access token:', error.response?.data || error.message);
-        throw new Error('M-Pesa authentication failed');
-    }
-}
-
-/**
- * Generate M-Pesa Password
- */
-function generateMpesaPassword(businessShortCode, passkey, timestamp) {
-    const stringToEncrypt = `${businessShortCode}${passkey}${timestamp}`;
-    return crypto
-        .createHash('sha256')
-        .update(stringToEncrypt)
-        .digest('base64');
-}
-
-/**
- * Format phone number to M-Pesa format
+ * Format phone number to IntaSend / Kenya mobile format
  */
 function formatPhoneNumber(phone) {
     let cleaned = phone.replace(/\D/g, '');
@@ -96,6 +60,37 @@ function formatPhoneNumber(phone) {
         cleaned = '254' + cleaned;
     }
     return cleaned;
+}
+
+/**
+ * Get the IntaSend API base URL
+ */
+function getIntaSendBaseUrl() {
+    if (process.env.INTASEND_BASE_URL) {
+        return process.env.INTASEND_BASE_URL.replace(/\/$/, '');
+    }
+
+    return process.env.INTASEND_ENVIRONMENT === 'production'
+        ? 'https://api.intasend.com'
+        : 'https://sandbox.intasend.com';
+}
+
+/**
+ * Build the IntaSend STK push payload
+ */
+function buildIntaSendStkPushPayload({ amount, phone, bookingId }) {
+    const payload = {
+        amount: Math.ceil(amount).toString(),
+        phone_number: formatPhoneNumber(phone),
+        api_ref: `BK${bookingId}`,
+        mobile_tarrif: process.env.INTASEND_MOBILE_TARRIF || 'BUSINESS-PAYS'
+    };
+
+    if (process.env.INTASEND_WALLET_ID) {
+        payload.wallet_id = process.env.INTASEND_WALLET_ID;
+    }
+
+    return payload;
 }
 
 // ===========================================
@@ -271,7 +266,7 @@ app.get('/health', (req, res) => {
  */
 app.post('/api/mpesa/stkpush', async (req, res) => {
     try {
-        const { phone, amount, bookingId, service, date, time, customerId } = req.body;
+        const { phone, amount, bookingId, service, date, time, customerId, email, customerName } = req.body;
 
         // Validation
         if (!phone || !amount || !bookingId) {
@@ -288,53 +283,41 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
             });
         }
 
-        // Get access token
-        const accessToken = await getAccessToken();
+        const intaSendBaseUrl = getIntaSendBaseUrl();
+        const intaSendToken = process.env.INTASEND_SECRET_KEY;
 
-        // Generate timestamp and password
-        const timestamp = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
-        const businessShortCode = process.env.MPESA_BUSINESS_SHORT_CODE;
-        const passkey = process.env.MPESA_PASSKEY;
-        const password = generateMpesaPassword(businessShortCode, passkey, timestamp);
+        if (!intaSendToken) {
+            return res.status(500).json({
+                success: false,
+                error: 'IntaSend secret key is not configured'
+            });
+        }
 
-        // Format phone number
-        const mobileNumber = formatPhoneNumber(phone);
+        const payload = buildIntaSendStkPushPayload({ amount, phone, bookingId });
 
-        // Prepare STK Push request
-        const stkPushUrl = process.env.MPESA_ENVIRONMENT === 'production'
-            ? 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
-            : 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
-
-        const payload = {
-            BusinessShortCode: businessShortCode,
-            Password: password,
-            Timestamp: timestamp,
-            TransactionType: 'CustomerPayBillOnline',
-            Amount: Math.ceil(amount),
-            PartyA: mobileNumber,
-            PartyB: businessShortCode,
-            PhoneNumber: mobileNumber,
-            CallBackURL: process.env.MPESA_CALLBACK_URL,
-            AccountReference: `BK${bookingId}`,
-            TransactionDesc: `Lash Appointment Deposit - ${service}`
-        };
-
-        console.log('Sending STK Push:', { 
-            amount, 
-            phone: mobileNumber, 
+        console.log('Sending IntaSend STK Push:', {
+            amount,
+            phone: payload.phone_number,
             bookingId,
-            accountReference: payload.AccountReference 
+            apiRef: payload.api_ref
         });
 
-        // Send STK Push to M-Pesa
-        const stkResponse = await axios.post(stkPushUrl, payload, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
+        const stkResponse = await axios.post(
+            `${intaSendBaseUrl}/api/v1/payment/mpesa-stk-push/`,
+            payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${intaSendToken}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }
             }
-        });
+        );
 
-        console.log('STK Push response:', stkResponse.data);
+        console.log('IntaSend STK Push response:', stkResponse.data);
+
+        const invoiceId = stkResponse.data?.invoice_id || stkResponse.data?.invoice?.invoice_id || stkResponse.data?.invoice?.id || null;
+        const checkoutId = stkResponse.data?.checkout_id || stkResponse.data?.checkout?.id || null;
 
         // Save booking to database
         await saveBookingToDatabase({
@@ -343,26 +326,77 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
             service,
             date,
             time,
-            phone: mobileNumber,
+            phone: formatPhoneNumber(phone),
             amount,
             paymentMethod: 'deposit',
             status: 'PENDING_PAYMENT',
-            mpesaCheckoutRequestId: stkResponse.data.CheckoutRequestID,
+            mpesaCheckoutRequestId: invoiceId || checkoutId,
             servicePrice: amount * 2 // Assuming deposit is 50%
         });
 
         res.json({
             success: true,
-            message: 'STK Push initiated successfully',
-            checkoutRequestId: stkResponse.data.CheckoutRequestID,
-            responseCode: stkResponse.data.ResponseCode
+            message: 'IntaSend STK Push initiated successfully',
+            invoiceId,
+            checkoutId,
+            raw: stkResponse.data
         });
 
     } catch (error) {
-        console.error('STK Push error:', error);
+        console.error('IntaSend STK Push error:', error.response?.data || error.message);
         res.status(500).json({
             success: false,
             error: error.message || 'Failed to initiate payment'
+        });
+    }
+});
+
+/**
+ * IntaSend payment status check
+ */
+app.post('/api/intasend/status', async (req, res) => {
+    try {
+        const { invoiceId, checkoutId } = req.body;
+
+        if (!invoiceId && !checkoutId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Missing invoiceId or checkoutId'
+            });
+        }
+
+        const intaSendToken = process.env.INTASEND_SECRET_KEY;
+        if (!intaSendToken) {
+            return res.status(500).json({
+                success: false,
+                error: 'IntaSend secret key is not configured'
+            });
+        }
+
+        const response = await axios.post(
+            `${getIntaSendBaseUrl()}/api/v1/payment/status/`,
+            {
+                invoice_id: invoiceId,
+                checkout_id: checkoutId
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${intaSendToken}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            data: response.data
+        });
+    } catch (error) {
+        console.error('IntaSend status error:', error.response?.data || error.message);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Failed to query payment status'
         });
     }
 });

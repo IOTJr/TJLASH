@@ -8,12 +8,17 @@ class LashBookingApp {
         this.bookingData = {
             service: null,
             servicePrice: null,
+            customerName: null,
+            customerPhone: null,
+            customerEmail: null,
             date: null,
             time: null,
             paymentMethod: 'deposit',
             mpesaPhone: null,
             depositAmount: null,
             totalAmount: null,
+            invoiceId: null,
+            checkoutId: null,
             bookingId: null
         };
 
@@ -444,9 +449,9 @@ class LashBookingApp {
     }
 
     /**
-     * Call M-Pesa API (Backend Integration)
+     * Call IntaSend API (Backend Integration)
      */
-    callMpesaAPI() {
+    async callMpesaAPI() {
         const paymentPayload = {
             phone: this.bookingData.mpesaPhone,
             amount: this.bookingData.depositAmount,
@@ -454,35 +459,50 @@ class LashBookingApp {
             service: this.bookingData.service,
             date: this.bookingData.date,
             time: this.bookingData.time,
-            customerId: this.generateCustomerId()
+            customerId: this.generateCustomerId(),
+            customerName: this.bookingData.customerName,
+            email: this.bookingData.customerEmail
         };
 
-        console.log('Calling M-Pesa API with payload:', paymentPayload);
+        console.log('Calling IntaSend API with payload:', paymentPayload);
 
-        // In production:
-        /*
-        fetch('/api/mpesa/stkpush', {
+        try {
+            const response = await fetch('/api/mpesa/stkpush', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer YOUR_TOKEN'
             },
             body: JSON.stringify(paymentPayload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('STK Push sent:', data);
-            if (!data.success) {
-                throw new Error('STK Push failed');
+            });
+
+            const data = await response.json();
+
+            console.log('IntaSend STK Push sent:', data);
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || 'IntaSend STK Push failed');
             }
-            // Payment will be confirmed via webhook callback
-        })
-        .catch(error => {
-            console.error('M-Pesa API error:', error);
+
+            this.bookingData.invoiceId = data.invoiceId || null;
+            this.bookingData.checkoutId = data.checkoutId || null;
+
+            const confirmation = [
+                this.bookingData.invoiceId ? `Invoice: ${this.bookingData.invoiceId}` : null,
+                this.bookingData.checkoutId ? `Checkout: ${this.bookingData.checkoutId}` : null
+            ].filter(Boolean).join(' | ');
+
+            const paymentMessage = document.getElementById('payment-note');
+            if (paymentMessage && confirmation) {
+                paymentMessage.textContent = `IntaSend request sent. ${confirmation}`;
+            }
+
+            return data;
+        } catch (error) {
+            console.error('IntaSend API error:', error);
             alert('Payment initiation failed. Please try again.');
             this.pageManager.transitionTo('page-checkout');
-        });
-        */
+            return null;
+        }
     }
 
     /**
@@ -568,12 +588,17 @@ class LashBookingApp {
         this.bookingData = {
             service: null,
             servicePrice: null,
+            customerName: null,
+            customerPhone: null,
+            customerEmail: null,
             date: null,
             time: null,
             paymentMethod: 'deposit',
             mpesaPhone: null,
             depositAmount: null,
             totalAmount: null,
+            invoiceId: null,
+            checkoutId: null,
             bookingId: null
         };
 
