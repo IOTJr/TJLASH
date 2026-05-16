@@ -319,20 +319,25 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
         const invoiceId = stkResponse.data?.invoice_id || stkResponse.data?.invoice?.invoice_id || stkResponse.data?.invoice?.id || null;
         const checkoutId = stkResponse.data?.checkout_id || stkResponse.data?.checkout?.id || null;
 
-        // Save booking to database
-        await saveBookingToDatabase({
-            bookingId,
-            customerId,
-            service,
-            date,
-            time,
-            phone: formatPhoneNumber(phone),
-            amount,
-            paymentMethod: 'deposit',
-            status: 'PENDING_PAYMENT',
-            mpesaCheckoutRequestId: invoiceId || checkoutId,
-            servicePrice: amount * 2 // Assuming deposit is 50%
-        });
+        // Save booking to database when configured, but do not fail the payment
+        // initiation if the database is unavailable in the current environment.
+        try {
+            await saveBookingToDatabase({
+                bookingId,
+                customerId,
+                service,
+                date,
+                time,
+                phone: formatPhoneNumber(phone),
+                amount,
+                paymentMethod: 'deposit',
+                status: 'PENDING_PAYMENT',
+                mpesaCheckoutRequestId: invoiceId || checkoutId,
+                servicePrice: amount * 2 // Assuming deposit is 50%
+            });
+        } catch (dbError) {
+            console.warn('Booking saved skipped after successful IntaSend request:', dbError.message);
+        }
 
         res.json({
             success: true,
