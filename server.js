@@ -348,10 +348,16 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('IntaSend STK Push error:', error.response?.data || error.message);
+        console.error('IntaSend STK Push error:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            message: error.message
+        });
         res.status(500).json({
             success: false,
-            error: error.message || 'Failed to initiate payment'
+            error: error.response?.data?.error || error.message || 'Failed to initiate payment',
+            details: error.response?.data
         });
     }
 });
