@@ -411,7 +411,12 @@ app.post('/api/intasend/webhook', async (req, res) => {
         const { challenge, invoice_id, state, api_ref, failed_reason, checkout_id } = req.body;
 
         if (challenge) {
-            const expectedChallenge = process.env.INTASEND_WEBHOOK_CHALLENGE || challenge;
+            const expectedChallenge = process.env.INTASEND_WEBHOOK_CHALLENGE;
+
+            if (!expectedChallenge) {
+                return res.status(500).json({ success: false, error: 'Webhook challenge is not configured' });
+            }
+
             if (challenge !== expectedChallenge) {
                 return res.status(401).json({ success: false, error: 'Invalid webhook challenge' });
             }

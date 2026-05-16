@@ -181,9 +181,11 @@ For production deployment with real IntaSend payments:
    - `INTASEND_ENVIRONMENT=production`
    - `INTASEND_BASE_URL=https://api.intasend.com`
    - `INTASEND_WEBHOOK_URL=https://lash-booking-app.vercel.app/api/intasend/webhook`
+   - `INTASEND_WEBHOOK_CHALLENGE=n4n0-systems-intasend-2026`
 
 3. **Webhook endpoint**
    - Use `https://lash-booking-app.vercel.app/api/intasend/webhook` in the IntaSend dashboard.
+   - Set the webhook challenge to `n4n0-systems-intasend-2026`.
    - IntaSend sends payment collection events to this URL when the payment state changes.
 
 4. **Local development**
